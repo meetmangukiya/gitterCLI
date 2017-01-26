@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/sromku/go-gitter"
+	"github.com/meetmangukiya/go-gitter"
 )
 
 func main() {
@@ -29,7 +29,7 @@ func main() {
 		case msg := <-receiver.Event:
 			switch ev := msg.Data.(type) {
 			case *gitter.MessageReceived:
-				fmt.Printf("[%s]: %s", ev.Message.From.Username, ev.Message.Text)
+				fmt.Printf("[%s]: %s\n", ev.Message.From.Username, ev.Message.Text)
 			case *gitter.GitterConnectionClosed:
 				fmt.Printf("!!Gitter Connection Closed!!")
 				panic("!!Gitter Connection Closed!!")
