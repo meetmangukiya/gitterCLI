@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/meetmangukiya/go-gitter"
 )
@@ -11,7 +12,7 @@ import (
 func main() {
 
 	// Setup
-	gitter_token := ""
+	gitter_token := get_env("GITTER_TOKEN")
 	client := gitter.New(gitter_token)
 
 	var CURRENT_ROOM_ID string = ""
@@ -49,4 +50,14 @@ func get_input(receiver chan string) {
 		input := scanner.Text()
 		receiver <- input
 	}
+}
+
+func get_env(env string) string {
+	for _, element := range os.Environ() {
+        key_value := strings.Split(element, "=")
+		if (key_value[0] == env) {
+			return key_value[1]
+		}
+	}
+	return ""
 }
