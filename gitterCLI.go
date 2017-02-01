@@ -14,8 +14,16 @@ func main() {
 	// Setup
 	gitter_token := get_env("GITTER_TOKEN")
 	client := gitter.New(gitter_token)
+	self, err := client.GetUser()
+	panic_err(err)
 
-	var CURRENT_ROOM_ID string = ""
+	var room_name string
+	fmt.Printf("Enter room name: ")
+	fmt.Scanf("%s", &room_name)
+	CURRENT_ROOM_ID, err := client.GetRoomId(room_name)
+	panic_err(err)
+
+	fmt.Printf("\nSuccessfully joined room " + room_name + "\n")
 
 	// Execution
 	receiver := client.Stream(CURRENT_ROOM_ID)
@@ -30,7 +38,9 @@ func main() {
 		case msg := <-receiver.Event:
 			switch ev := msg.Data.(type) {
 			case *gitter.MessageReceived:
-				fmt.Printf("[%s]: %s\n", ev.Message.From.Username, ev.Message.Text)
+				if ev.Message.From.Username != self.Username {
+					fmt.Printf("\n[%s]: %s\n...", ev.Message.From.Username, ev.Message.Text)
+				}
 			case *gitter.GitterConnectionClosed:
 				fmt.Printf("!!Gitter Connection Closed!!")
 				panic("!!Gitter Connection Closed!!")
@@ -60,4 +70,10 @@ func get_env(env string) string {
 		}
 	}
 	return ""
+}
+
+func panic_err(err error) {
+	if err != nil{
+		panic(err)
+	}
 }
