@@ -13,6 +13,10 @@ func main() {
 
 	// Setup
 	gitter_token := get_env("GITTER_TOKEN")
+	if gitter_token == "" {
+		fmt.Println("Please set the GITTER_TOKEN environment variable")
+		os.Exit(1)
+	}
 	client := gitter.New(gitter_token)
 	self, err := client.GetUser()
 	panic_err(err)
