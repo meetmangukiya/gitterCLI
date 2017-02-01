@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/meetmangukiya/go-gitter"
+	"github.com/sromku/go-gitter"
 )
 
 func main() {
@@ -58,6 +58,7 @@ func get_input(receiver chan string) {
 
 	for scanner.Scan() {
 		input := scanner.Text()
+		fmt.Printf("...")
 		receiver <- input
 	}
 }
