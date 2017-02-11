@@ -5,11 +5,16 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"flag"
 
 	"github.com/sromku/go-gitter"
 )
 
 func main() {
+
+	// Argument Parsing
+	var endpoint = flag.String("end", "stream", "Endpoint to be used")
+	flag.Parse()
 
 	// Setup
 	gitter_token := get_env("GITTER_TOKEN")
@@ -27,11 +32,30 @@ func main() {
 	CURRENT_ROOM_ID, err := client.GetRoomId(room_name)
 	panic_err(err)
 
-	fmt.Printf("\nSuccessfully joined room " + room_name + "\n")
+	fmt.Printf("\nSuccessfully joined room " + room_name + "\n...")
 
 	// Execution
-	receiver := client.Stream(CURRENT_ROOM_ID)
-	go client.Listen(receiver)
+	// ---------
+
+	var receiver_stream *gitter.Stream
+	var receiver_faye *gitter.Faye
+
+	var events *(chan gitter.Event)
+
+	if *endpoint == "stream" {
+		// Streaming API
+		receiver_stream = client.Stream(CURRENT_ROOM_ID)
+		go client.Listen(receiver_stream)
+		events = &receiver_stream.Event
+	} else if *endpoint == "faye" {
+		// Faye API
+		receiver_faye = client.Faye(CURRENT_ROOM_ID)
+		go receiver_faye.Listen()
+		events = &receiver_faye.Event
+	} else {
+		panic("Invalid choice, please use either stream or faye.")
+	}
+
 
 	sender := make(chan string, 10)
 	go get_input(sender)
@@ -39,7 +63,7 @@ func main() {
 	// Interaction
 	for {
 		select {
-		case msg := <-receiver.Event:
+		case msg := <-*events:
 			switch ev := msg.Data.(type) {
 			case *gitter.MessageReceived:
 				if ev.Message.From.Username != self.Username {
