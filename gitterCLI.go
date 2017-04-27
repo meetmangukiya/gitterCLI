@@ -2,10 +2,10 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"os"
 	"strings"
-	"flag"
 
 	"github.com/sromku/go-gitter"
 )
@@ -56,7 +56,6 @@ func main() {
 		panic("Invalid choice, please use either stream or faye.")
 	}
 
-
 	sender := make(chan string, 10)
 	go get_input(sender)
 
@@ -93,8 +92,8 @@ func get_input(receiver chan string) {
 
 func get_env(env string) string {
 	for _, element := range os.Environ() {
-        key_value := strings.Split(element, "=")
-		if (key_value[0] == env) {
+		key_value := strings.Split(element, "=")
+		if key_value[0] == env {
 			return key_value[1]
 		}
 	}
@@ -102,7 +101,7 @@ func get_env(env string) string {
 }
 
 func panic_err(err error) {
-	if err != nil{
+	if err != nil {
 		panic(err)
 	}
 }
